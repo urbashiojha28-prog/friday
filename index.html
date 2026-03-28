@@ -1,70 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>J.A.R.V.I.S | NEXUS v4</title>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>J.A.R.V.I.S | OMNI-RECON</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Share+Tech+Mono&display=swap');
+:root { --c: #00f0ff; --g: #0b0; --r: #f25; --bg: #000205; --glow: 0 0 15px rgba(0,240,255,0.7); }
+* { margin:0; padding:0; box-sizing:border-box; overflow:hidden; }
+body { background:var(--bg); color:var(--c); font-family:'Share Tech Mono', monospace; }
 
-:root {
-  --c: #00f0ff; --g: #00ff99; --r: #ff2255; --y: #ffbb00; --bg: #01060f;
-  --glow: 0 0 15px rgba(0,240,255,0.6);
+/* ═══ GLOBAL FX ═══ */
+#app::after {
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.2) 50%), linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.02), rgba(0,0,255,0.05));
+  background-size: 100% 2px, 3px 100%; z-index:1000;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; touch-action:none; }
-body, html { width:100%; height:100%; background:var(--bg); color:var(--c); font-family:'Share Tech Mono', monospace; overflow:hidden; }
-
-/* ═══ HOLOGRAPHIC FX ═══ */
-#app::before {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 3px, 3px 100%; pointer-events: none; z-index: 100;
+/* ═══ HOLOGRAPHIC OBJECTS ═══ */
+.fo {
+  position: absolute; border: 1px solid var(--c); background: rgba(0,20,40,0.4);
+  backdrop-filter: blur(15px); min-width: 150px; z-index: 10; padding: 2px;
+  box-shadow: var(--glow); clip-path: polygon(0 5%, 5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+  animation: glitch-border 4s infinite;
 }
+@keyframes glitch-border { 0%, 100% { border-color: var(--c); } 50% { border-color: var(--r); } }
 
-#intro { position:fixed; inset:0; background:#000; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: 1s; cursor: pointer; }
-#iLogo { font-family:'Orbitron'; font-size:64px; letter-spacing:15px; text-shadow: var(--glow); }
+.fbar { display:flex; padding:6px; background:rgba(0,240,255,0.1); cursor:move; font-size:9px; letter-spacing:2px; }
+.fbody { padding:15px; position:relative; }
+.ft { font-size: 24px; font-family:'Orbitron'; text-shadow: 0 0 10px var(--c); outline:none; }
+.fo img { width:100%; filter: contrast(1.2) sepia(0.5) hue-rotate(140deg); pointer-events:none; }
 
-/* ═══ OBJECTS ═══ */
-.fo { position: absolute; border: 1px solid rgba(0,240,255,0.3); background: rgba(0,12,24,0.8); backdrop-filter: blur(10px); min-width: 150px; z-index: 10; border-radius: 4px; box-shadow: 0 10px 30px #000; }
-.fbar { display:flex; padding:6px; background:rgba(0,240,255,0.15); cursor:move; border-bottom:1px solid rgba(0,240,255,0.1); }
-.ftl { font-size:9px; letter-spacing:1px; flex:1; }
-.fbody { padding:10px; }
-.ft { font-size: 20px; outline:none; font-family:'Orbitron'; }
-.fo img { width:100%; border-radius:2px; pointer-events:none; }
-.rh { position:absolute; bottom:0; right:0; width:20px; height:20px; cursor:nwse-resize; }
-.rh::after { content:''; position:absolute; right:4px; bottom:4px; width:8px; height:8px; border-right:2px solid var(--c); border-bottom:2px solid var(--c); }
+/* ═══ UI PANELS ═══ */
+#video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:0.25; filter: contrast(1.5); }
+canvas { position:absolute; inset:0; pointer-events:none; z-index:5; }
 
-/* ═══ HUD ELEMENTS ═══ */
-#video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:0.3; }
-canvas { position:absolute; inset:0; pointer-events:none; }
-
-#toolbar { position:absolute; right:20px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:12px; z-index:101; }
-.tool-btn { width:55px; height:55px; background:rgba(0,10,20,0.9); border:1px solid rgba(0,240,255,0.2); color:var(--c); cursor:pointer; transition:0.3s; display:flex; align-items:center; justify-content:center; font-size:20px; }
-.tool-btn:hover, .tool-btn.active { background:var(--c); color:#000; box-shadow: var(--glow); transform: scale(1.1); }
-
-/* ═══ STATUS TERMINAL ═══ */
 #terminal {
-  position:absolute; bottom:20px; right:20px; width:250px; height:120px;
-  background:rgba(0,0,0,0.5); font-size:9px; color:var(--g); overflow:hidden;
-  padding:10px; border-left:2px solid var(--g); pointer-events:none;
+  position:absolute; bottom:20px; right:20px; width:300px; height:180px;
+  background:rgba(0,0,0,0.8); border:1px solid var(--g); padding:10px;
+  font-size:10px; color:var(--g); overflow:hidden; line-height:1.2;
 }
 
-#toast { position:absolute; bottom:150px; left:50%; transform:translateX(-50%); font-family:'Orbitron'; font-size:12px; letter-spacing:4px; opacity:0; transition:0.3s; background:rgba(0,240,255,0.1); padding:10px 30px; border:1px solid var(--c); }
-
-@keyframes blast {
-  0% { transform: scale(0); opacity: 1; filter: hue-rotate(0deg); }
-  100% { transform: scale(4); opacity: 0; filter: hue-rotate(90deg); }
+#toolbar {
+  position:absolute; left:20px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:15px; z-index:101;
 }
-.nebula-fx { position:absolute; border-radius:50%; background:radial-gradient(circle, #fff, var(--c), transparent); animation: blast 0.8s ease-out forwards; pointer-events:none; z-index:200; }
+.tool-btn {
+  width:60px; height:60px; background:rgba(0,0,0,0.8); border:1px solid var(--c);
+  color:var(--c); cursor:pointer; font-family:'Orbitron'; transition: 0.2s;
+}
+.tool-btn:hover, .tool-btn.active { background:var(--c); color:#000; box-shadow: 0 0 30px var(--c); }
+
+#vitals { position:absolute; top:20px; left:20px; font-size:12px; letter-spacing:3px; }
+
+#intro {
+  position:fixed; inset:0; background:#000; z-index:2000; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; cursor:pointer;
+}
+#iLogo { font-family:'Orbitron'; font-size:80px; color:var(--c); text-shadow: var(--glow); letter-spacing:20px; }
 </style>
 </head>
 <body>
 
 <div id="intro" onclick="bootSystem()">
-  <div id="iLogo">NEXUS_v4</div>
-  <div style="margin-top:20px; color:var(--c); letter-spacing:5px;">[ CLICK TO ENGAGE PROTOCOL ]</div>
+  <div id="iLogo">JARVIS</div>
+  <div style="letter-spacing:10px; color:var(--r); margin-top:20px;">[ INITIATE OMNI_LINK ]</div>
 </div>
 
 <div id="app">
@@ -72,17 +71,21 @@ canvas { position:absolute; inset:0; pointer-events:none; }
   <canvas id="bgCvs"></canvas>
   <canvas id="fxCvs"></canvas>
   
+  <div id="vitals">
+    LINK: <span id="lStatus" style="color:var(--r)">OFFLINE</span><br>
+    THREAT_LVL: <span style="color:var(--g)">MINIMAL</span>
+  </div>
+
   <div id="toolbar">
-    <button class="tool-btn active" id="btnDraw">✎</button>
-    <button class="tool-btn" id="btnErase">⌫</button>
-    <button class="tool-btn" id="btnText">T</button>
-    <button class="tool-btn" id="btnImg">🖼</button>
-    <button class="tool-btn" id="btnClear">🗑</button>
+    <button class="tool-btn active" id="btnDraw" data-t="draw">DRAW</button>
+    <button class="tool-btn" id="btnErase" data-t="erase">DEL</button>
+    <button class="tool-btn" id="btnText">TEXT</button>
+    <button class="tool-btn" id="btnImg">FILE</button>
+    <button class="tool-btn" id="btnClear">PURGE</button>
   </div>
 
   <div id="terminal"></div>
   <div id="objects-root"></div>
-  <div id="toast">SYSTEM_ONLINE</div>
 </div>
 
 <input type="file" id="fileIn" hidden accept="image/*">
@@ -91,157 +94,151 @@ canvas { position:absolute; inset:0; pointer-events:none; }
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
-const state = {
-  tool: 'draw',
-  color: '#00f0ff',
-  brushSize: 5,
-  handPos: { x: 0, y: 0 },
-  lastDist: 1000,
-  isClapping: false,
-  smoothing: 0.3
-};
+/** ◈ SYSTEM ENGINE ◈ **/
+const s = { tool:'draw', color:'#00f0ff', pts:[], particles:[], lastDist:999, h:{x:0,y:0} };
+const fxCvs = document.getElementById('fxCvs'), fxCtx = fxCvs.getContext('2d');
+const bgCvs = document.getElementById('bgCvs'), bgCtx = bgCvs.getContext('2d');
+const term = document.getElementById('terminal');
 
-const bgCvs = document.getElementById('bgCvs');
-const fxCvs = document.getElementById('fxCvs');
-const bgCtx = bgCvs.getContext('2d');
-const fxCtx = fxCvs.getContext('2d');
-const objRoot = document.getElementById('objects-root');
-const terminal = document.getElementById('terminal');
+function resize() {
+  bgCvs.width = fxCvs.width = window.innerWidth;
+  bgCvs.height = fxCvs.height = window.innerHeight;
+}
+window.onresize = resize; resize();
 
-function log(msg) {
-  const line = document.createElement('div');
-  line.textContent = `> ${new Date().toLocaleTimeString()}: ${msg}`;
-  terminal.prepend(line);
-  if (terminal.childNodes.length > 10) terminal.lastChild.remove();
+function log(t) {
+  const d = document.createElement('div');
+  d.textContent = `[${Math.random().toString(16).slice(2,8)}] ${t}`;
+  term.prepend(d); if(term.children.length > 15) term.lastChild.remove();
 }
 
 function speak(t) {
   const m = new SpeechSynthesisUtterance(t);
   const v = window.speechSynthesis.getVoices();
-  m.voice = v.find(x => x.name.includes('Male') && x.lang.includes('en-GB')) || v[0];
+  m.voice = v.find(x => x.name.includes('Google UK English Male')) || v[0];
   m.rate = 1.1; window.speechSynthesis.speak(m);
 }
 
-function triggerBlast(x, y) {
-  log("CRITICAL_ENERGY_EXPULSION");
-  speak("Careful, sir. Energy levels destabilized.");
-  const blast = document.createElement('div');
-  blast.className = 'nebula-fx';
-  blast.style.left = (x - 100) + 'px';
-  blast.style.top = (y - 100) + 'px';
-  blast.style.width = blast.style.height = '200px';
-  document.body.appendChild(blast);
-  setTimeout(() => blast.remove(), 800);
-  
-  // Screen Shake
-  document.getElementById('app').style.animation = 'shake 0.2s 3';
+/** ◈ NEBULA PARTICLE ENGINE ◈ **/
+class Particle {
+  constructor(x,y) {
+    this.x = x; this.y = y;
+    this.vx = (Math.random()-0.5) * 25;
+    this.vy = (Math.random()-0.5) * 25;
+    this.life = 1.0;
+    this.c = Math.random() > 0.5 ? '#00f0ff' : '#fff';
+  }
+  update() { this.x += this.vx; this.y += this.vy; this.life -= 0.02; }
+  draw() {
+    fxCtx.globalAlpha = this.life;
+    fxCtx.fillStyle = this.c;
+    fxCtx.beginPath(); fxCtx.arc(this.x, this.y, 3 * this.life, 0, Math.PI*2); fxCtx.fill();
+  }
 }
 
+function triggerNebula(x,y) {
+  speak("Energy surge detected. Nebula protocol active.");
+  log("CRITICAL_COLLISION_DETECTION");
+  for(let i=0; i<80; i++) s.particles.push(new Particle(x,y));
+}
+
+/** ◈ ULTRON ENERGY FLOW ◈ **/
 function drawBridge(p1, p2) {
-  const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+  const d = Math.hypot(p2.x-p1.x, p2.y-p1.y);
   
-  // Clap Detection Logic
-  if (dist < 60 && state.lastDist > 100 && !state.isClapping) {
-    triggerBlast((p1.x + p2.x)/2, (p1.y + p2.y)/2);
-    state.isClapping = true;
-    setTimeout(() => state.isClapping = false, 1000);
-  }
-  state.lastDist = dist;
+  // Clap logic
+  if(d < 70 && s.lastDist > 120) triggerNebula((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+  s.lastDist = d;
 
   fxCtx.save();
-  fxCtx.shadowBlur = 15; fxCtx.shadowColor = state.color;
-  fxCtx.strokeStyle = state.color;
-  fxCtx.lineWidth = 3;
+  fxCtx.strokeStyle = d < 150 ? '#f25' : '#00f0ff';
+  fxCtx.lineWidth = 2;
+  fxCtx.shadowBlur = 15; fxCtx.shadowColor = fxCtx.strokeStyle;
   
-  // Ultron Jitter Bridge
   fxCtx.beginPath();
   fxCtx.moveTo(p1.x, p1.y);
-  const segments = 8;
-  for(let i=1; i<=segments; i++) {
-    const t = i/segments;
-    const jX = (Math.random()-0.5) * 20;
-    const jY = (Math.random()-0.5) * 20;
-    fxCtx.lineTo(p1.x + (p2.x-p1.x)*t + jX, p1.y + (p2.y-p1.y)*t + jY);
+  // Jagged arc
+  for(let i=0; i<10; i++) {
+    const t = i/10;
+    const x = p1.x + (p2.x-p1.x)*t + (Math.random()-0.5)*30;
+    const y = p1.y + (p2.y-p1.y)*t + (Math.random()-0.5)*30;
+    fxCtx.lineTo(x,y);
   }
+  fxCtx.lineTo(p2.x, p2.y);
   fxCtx.stroke();
   fxCtx.restore();
 }
 
+/** ◈ HAND TRACKING ◈ **/
 function onResults(res) {
-  fxCtx.clearRect(0, 0, fxCvs.width, fxCvs.height);
-  if (!res.multiHandLandmarks?.length) return;
+  fxCtx.clearRect(0,0,fxCvs.width,fxCvs.height);
+  
+  // Update particles
+  s.particles.forEach((p,i) => { p.update(); p.draw(); if(p.life<=0) s.particles.splice(i,1); });
 
-  if (res.multiHandLandmarks.length >= 2) {
-    drawBridge(getPt(res.multiHandLandmarks[0][9]), getPt(res.multiHandLandmarks[1][9]));
+  if(!res.multiHandLandmarks?.length) return;
+  document.getElementById('lStatus').textContent = "ACTIVE";
+  document.getElementById('lStatus').style.color = "var(--g)";
+
+  if(res.multiHandLandmarks.length >= 2) {
+    drawBridge(gp(res.multiHandLandmarks[0][9]), gp(res.multiHandLandmarks[1][9]));
   }
 
-  const hand = res.multiHandLandmarks[0];
-  const raw = getPt(hand[8]);
-  state.handPos.x = (state.smoothing * raw.x) + (1-state.smoothing)*state.handPos.x;
-  state.handPos.y = (state.smoothing * raw.y) + (1-state.smoothing)*state.handPos.y;
+  const h = res.multiHandLandmarks[0];
+  const p = gp(h[8]);
+  // Smoothing
+  s.h.x = s.h.x*0.7 + p.x*0.3; s.h.y = s.h.y*0.7 + p.y*0.3;
 
-  const g = hand[8].y < hand[6].y && hand[12].y > hand[10].y ? 'draw' : 'hover';
+  const gest = (h[8].y < h[6].y && h[12].y > h[10].y) ? 'draw' : 'hover';
 
-  if (g === 'draw' && state.tool === 'draw') {
-    if (state.lastPt) {
-      bgCtx.strokeStyle = state.color;
-      bgCtx.lineWidth = state.brushSize;
-      bgCtx.lineCap = 'round';
-      bgCtx.beginPath(); bgCtx.moveTo(state.lastPt.x, state.lastPt.y);
-      bgCtx.lineTo(state.handPos.x, state.handPos.y); bgCtx.stroke();
+  if(gest === 'draw' && s.tool === 'draw') {
+    if(s.lp) {
+      bgCtx.strokeStyle = s.color; bgCtx.lineWidth = 6; bgCtx.lineCap = 'round';
+      bgCtx.beginPath(); bgCtx.moveTo(s.lp.x, s.lp.y); bgCtx.lineTo(s.h.x, s.h.y); bgCtx.stroke();
     }
-    state.lastPt = { ...state.handPos };
-  } else { state.lastPt = null; }
+    s.lp = {...s.h};
+  } else { s.lp = null; }
 
-  // Draw HUD Cursor
-  fxCtx.strokeStyle = state.color;
-  fxCtx.strokeRect(state.handPos.x - 15, state.handPos.y - 15, 30, 30);
+  // Draw HUD Crosshair
+  fxCtx.strokeStyle = s.color;
+  fxCtx.strokeRect(s.h.x-20, s.h.y-20, 40, 40);
+  fxCtx.beginPath(); fxCtx.moveTo(s.h.x-30, s.h.y); fxCtx.lineTo(s.h.x+30, s.h.y);
+  fxCtx.moveTo(s.h.x, s.h.y-30); fxCtx.lineTo(s.h.x, s.h.y+30); fxCtx.stroke();
 }
 
-function getPt(lm) { return { x: (1-lm.x)*bgCvs.width, y: lm.y*bgCvs.height }; }
+function gp(lm) { return { x: (1-lm.x)*fxCvs.width, y: lm.y*fxCvs.height }; }
 
-function createObject(type, content) {
+/** ◈ OBJECT LOGIC ◈ **/
+function makeObj(type, content) {
   const el = document.createElement('div');
-  el.className = 'fo'; el.style.left = '100px'; el.style.top = '100px';
-  el.innerHTML = `
-    <div class="fbar"><div class="ftl">NEXUS::${type}</div><button class="fb" onclick="this.parentElement.parentElement.remove()">✕</button></div>
-    <div class="fbody">${type === 'text' ? `<div class="ft" contenteditable="true">${content}</div>` : `<img src="${content}">`}</div>
-    <div class="rh"></div>
-  `;
-  objRoot.appendChild(el);
-  setupObj(el);
+  el.className = 'fo'; el.style.left = '20%'; el.style.top = '20%';
+  el.innerHTML = `<div class="fbar">NEXUS_STREAM_${type.toUpperCase()}</div>
+    <div class="fbody">${type==='text'?`<div class="ft" contenteditable="true">${content}</div>`:`<img src="${content}">`}</div>`;
+  document.getElementById('objects-root').appendChild(el);
+  
+  let d = false, sx, sy, sl, st;
+  el.onpointerdown = e => { if(e.target.className==='fbar'){d=true; sx=e.clientX; sy=e.clientY; sl=el.offsetLeft; st=el.offsetTop; el.setPointerCapture(e.pointerId);}};
+  window.addEventListener('pointermove', e => { if(d){ el.style.left=(sl+e.clientX-sx)+'px'; el.style.top=(st+e.clientY-sy)+'px'; }});
+  window.addEventListener('pointerup', () => d=false);
   log(`LOADED_${type.toUpperCase()}`);
-}
-
-function setupObj(el) {
-  let drag = false, res = false, sx, sy, sw, sl, st;
-  el.querySelector('.fbar').onpointerdown = e => { drag = true; sx=e.clientX; sy=e.clientY; sl=el.offsetLeft; st=el.offsetTop; el.setPointerCapture(e.pointerId); };
-  el.querySelector('.rh').onpointerdown = e => { res = true; sx=e.clientX; sw=el.offsetWidth; el.setPointerCapture(e.pointerId); e.stopPropagation(); };
-  window.onpointermove = e => {
-    if (drag) { el.style.left = (sl + e.clientX - sx)+'px'; el.style.top = (st + e.clientY - sy)+'px'; }
-    if (res) { el.style.width = (sw + e.clientX - sx)+'px'; }
-  };
-  window.onpointerup = () => drag = res = false;
 }
 
 function bootSystem() {
   document.getElementById('intro').style.display = 'none';
-  const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-  hands.setOptions({maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6});
+  const hands = new Hands({locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+  hands.setOptions({maxNumHands:2, modelComplexity:1, minDetectionConfidence:0.6});
   hands.onResults(onResults);
-  const cam = new Camera(document.getElementById('video'), { onFrame: async () => await hands.send({image: document.getElementById('video')}), width: 1280, height: 720 });
+  const cam = new Camera(document.getElementById('video'), { onFrame: async() => await hands.send({image:document.getElementById('video')}), width:1280, height:720 });
   cam.start();
-  resize();
-  speak("Nexus protocol version four initialized. Supernova sensors are active, sir.");
+  speak("Omni-Recon initialized. Workspace is ready for deployment.");
 }
 
-function resize() { bgCvs.width = fxCvs.width = window.innerWidth; bgCvs.height = fxCvs.height = window.innerHeight; }
-window.onresize = resize;
-
-document.getElementById('btnText').onclick = () => createObject('text', 'STARK_DATA_01');
+/** ◈ TOOL WIRING ◈ **/
+document.getElementById('btnText').onclick = () => makeObj('text', 'STARK_DATA_BLOCK');
 document.getElementById('btnImg').onclick = () => document.getElementById('fileIn').click();
-document.getElementById('fileIn').onchange = e => { const r = new FileReader(); r.onload = v => createObject('image', v.target.result); r.readAsDataURL(e.target.files[0]); };
-document.getElementById('btnClear').onclick = () => { bgCtx.clearRect(0,0,bgCvs.width,bgCvs.height); objRoot.innerHTML=''; log("SYSTEM_PURGED"); };
+document.getElementById('fileIn').onchange = e => { const r = new FileReader(); r.onload=v=>makeObj('image', v.target.result); r.readAsDataURL(e.target.files[0]); };
+document.getElementById('btnClear').onclick = () => { bgCtx.clearRect(0,0,bgCvs.width,bgCvs.height); document.getElementById('objects-root').innerHTML=''; speak("System purged."); };
+document.querySelectorAll('.tool-btn[data-t]').forEach(b => b.onclick = () => { s.tool=b.dataset.t; document.querySelectorAll('.tool-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); });
 
 </script>
 </body>
