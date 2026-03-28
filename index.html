@@ -1,245 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>J.A.R.V.I.S | OMNI-RECON</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>J.A.R.V.I.S | NEXUS ENHANCED</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Share+Tech+Mono&display=swap');
-:root { --c: #00f0ff; --g: #0b0; --r: #f25; --bg: #000205; --glow: 0 0 15px rgba(0,240,255,0.7); }
-* { margin:0; padding:0; box-sizing:border-box; overflow:hidden; }
-body { background:var(--bg); color:var(--c); font-family:'Share Tech Mono', monospace; }
-
-/* ═══ GLOBAL FX ═══ */
-#app::after {
-  content:""; position:fixed; inset:0; pointer-events:none;
-  background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.2) 50%), linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.02), rgba(0,0,255,0.05));
-  background-size: 100% 2px, 3px 100%; z-index:1000;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+:root{
+  --c:#00f0ff;--g:#00ff99;--r:#ff2255;--y:#ffbb00;--p:#aa44ff;
+  --bg:#010914;
+  --glow:0 0 8px #00f0ff,0 0 24px rgba(0,240,255,.3);
 }
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Share Tech Mono',monospace;color:var(--c);touch-action:none;}
 
-/* ═══ HOLOGRAPHIC OBJECTS ═══ */
-.fo {
-  position: absolute; border: 1px solid var(--c); background: rgba(0,20,40,0.4);
-  backdrop-filter: blur(15px); min-width: 150px; z-index: 10; padding: 2px;
-  box-shadow: var(--glow); clip-path: polygon(0 5%, 5% 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
-  animation: glitch-border 4s infinite;
-}
-@keyframes glitch-border { 0%, 100% { border-color: var(--c); } 50% { border-color: var(--r); } }
-
-.fbar { display:flex; padding:6px; background:rgba(0,240,255,0.1); cursor:move; font-size:9px; letter-spacing:2px; }
-.fbody { padding:15px; position:relative; }
-.ft { font-size: 24px; font-family:'Orbitron'; text-shadow: 0 0 10px var(--c); outline:none; }
-.fo img { width:100%; filter: contrast(1.2) sepia(0.5) hue-rotate(140deg); pointer-events:none; }
+/* ═══ INTRO ═══ */
+#intro{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease-in-out;cursor:pointer;}
+#iLogo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(32px,10vw,80px);letter-spacing:15px;text-shadow:var(--glow);animation:br 4s infinite;}
+@keyframes br{0%,100%{opacity:.4;letter-spacing:15px;}50%{opacity:1;letter-spacing:25px;}}
 
 /* ═══ UI PANELS ═══ */
-#video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); opacity:0.25; filter: contrast(1.5); }
-canvas { position:absolute; inset:0; pointer-events:none; z-index:5; }
+#app{position:relative;width:100%;height:100%;display:none;}
+#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:.4;filter:contrast(1.2) brightness(0.8);}
+canvas{position:absolute;inset:0;pointer-events:none;}
 
-#terminal {
-  position:absolute; bottom:20px; right:20px; width:300px; height:180px;
-  background:rgba(0,0,0,0.8); border:1px solid var(--g); padding:10px;
-  font-size:10px; color:var(--g); overflow:hidden; line-height:1.2;
-}
+/* ═══ DYNAMIC OBJECTS ═══ */
+.fo{position:absolute;border:1px solid var(--c);background:rgba(1,9,20,.7);backdrop-filter:blur(10px);min-width:100px;box-shadow:var(--glow);transform-origin:center;}
+.fo.sel{border-color:var(--g);box-shadow:var(--glow-g);z-index:100;}
+.fbar{display:flex;padding:6px;background:rgba(0,240,255,.1);cursor:move;align-items:center;border-bottom:1px solid rgba(0,240,255,.1);}
+.ftl{font-size:10px;letter-spacing:1px;flex:1;opacity:.6;}
+.fb{width:20px;height:20px;background:none;border:1px solid rgba(0,240,255,.3);color:var(--c);cursor:pointer;margin-left:4px;font-size:10px;display:flex;align-items:center;justify-content:center;}
+.fbody{padding:10px;position:relative;}
+.ft{font-size:24px;color:var(--c);text-shadow:0 0 10px var(--c);outline:none;font-family:'Orbitron';min-width:50px;}
+.fo img{width:100%;display:block;pointer-events:none;}
+.rh{position:absolute;bottom:-6px;right:-6px;width:15px;height:15px;background:var(--c);cursor:se-resize;clip-path:polygon(100% 0,100% 100%,0 100%);}
 
-#toolbar {
-  position:absolute; left:20px; top:50%; transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:15px; z-index:101;
-}
-.tool-btn {
-  width:60px; height:60px; background:rgba(0,0,0,0.8); border:1px solid var(--c);
-  color:var(--c); cursor:pointer; font-family:'Orbitron'; transition: 0.2s;
-}
-.tool-btn:hover, .tool-btn.active { background:var(--c); color:#000; box-shadow: 0 0 30px var(--c); }
+/* ═══ BLAST FX ═══ */
+.blast{position:absolute;border-radius:50%;background:radial-gradient(circle, #fff 0%, var(--c) 50%, transparent 70%);pointer-events:none;z-index:200;animation:b-out 0.6s ease-out forwards;}
+@keyframes b-out{0%{transform:scale(0);opacity:1;}100%{transform:scale(4);opacity:0;}}
 
-#vitals { position:absolute; top:20px; left:20px; font-size:12px; letter-spacing:3px; }
+/* ═══ TOOLBAR ═══ */
+#tools{position:absolute;left:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:101;}
+.t-btn{width:50px;height:50px;background:rgba(1,9,20,.8);border:1px solid rgba(0,240,255,.3);color:var(--c);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:20px;}
+.t-btn:hover,.t-btn.act{background:var(--c);color:#000;box-shadow:var(--glow);}
 
-#intro {
-  position:fixed; inset:0; background:#000; z-index:2000; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; cursor:pointer;
-}
-#iLogo { font-family:'Orbitron'; font-size:80px; color:var(--c); text-shadow: var(--glow); letter-spacing:20px; }
+#toast{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:'Orbitron';font-size:12px;letter-spacing:4px;opacity:0;transition:.3s;background:rgba(0,240,255,.1);padding:8px 24px;border-left:3px solid var(--c);}
 </style>
 </head>
 <body>
 
-<div id="intro" onclick="bootSystem()">
-  <div id="iLogo">JARVIS</div>
-  <div style="letter-spacing:10px; color:var(--r); margin-top:20px;">[ INITIATE OMNI_LINK ]</div>
+<div id="intro" onclick="boot()">
+  <div id="iLogo">J.A.R.V.I.S</div>
+  <div style="letter-spacing:5px;margin-top:20px;color:rgba(0,240,255,.5)">[ INITIATE NEURAL LINK ]</div>
 </div>
 
 <div id="app">
-  <video id="video" autoplay playsinline muted></video>
+  <video id="vid" autoplay playsinline muted></video>
   <canvas id="bgCvs"></canvas>
   <canvas id="fxCvs"></canvas>
   
-  <div id="vitals">
-    LINK: <span id="lStatus" style="color:var(--r)">OFFLINE</span><br>
-    THREAT_LVL: <span style="color:var(--g)">MINIMAL</span>
+  <div id="tools">
+    <button class="t-btn act" id="tDr" title="DRAW [D]">✎</button>
+    <button class="t-btn" id="tEr" title="ERASE [E]">⌫</button>
+    <button class="t-btn" id="tTx" title="TEXT [T]">T</button>
+    <button class="t-btn" id="fInBtn" title="IMAGE [I]">🖼</button>
+    <button class="t-btn" id="tClr" title="CLEAR ALL [C]">🗑</button>
   </div>
 
-  <div id="toolbar">
-    <button class="tool-btn active" id="btnDraw" data-t="draw">DRAW</button>
-    <button class="tool-btn" id="btnErase" data-t="erase">DEL</button>
-    <button class="tool-btn" id="btnText">TEXT</button>
-    <button class="tool-btn" id="btnImg">FILE</button>
-    <button class="tool-btn" id="btnClear">PURGE</button>
-  </div>
-
-  <div id="terminal"></div>
-  <div id="objects-root"></div>
+  <div id="obj-root"></div>
+  <div id="toast">SYSTEM READY</div>
 </div>
 
-<input type="file" id="fileIn" hidden accept="image/*">
+<input type="file" id="fIn" hidden accept="image/*">
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
-/** ◈ SYSTEM ENGINE ◈ **/
-const s = { tool:'draw', color:'#00f0ff', pts:[], particles:[], lastDist:999, h:{x:0,y:0} };
-const fxCvs = document.getElementById('fxCvs'), fxCtx = fxCvs.getContext('2d');
-const bgCvs = document.getElementById('bgCvs'), bgCtx = bgCvs.getContext('2d');
-const term = document.getElementById('terminal');
+/** ◈ CORE STATE ◈ **/
+const S = {
+  tool: 'draw', color: '#00f0ff', bSize: 5, active: false,
+  lp: null, hPos: {x:0, y:0}, lastDist: 1000, isClapping: false
+};
+
+const bgC = document.getElementById('bgCvs'), bgCtx = bgC.getContext('2d');
+const fxC = document.getElementById('fxCvs'), fxCtx = fxC.getContext('2d');
+const objRoot = document.getElementById('obj-root');
 
 function resize() {
-  bgCvs.width = fxCvs.width = window.innerWidth;
-  bgCvs.height = fxCvs.height = window.innerHeight;
+  bgC.width = fxC.width = window.innerWidth;
+  bgC.height = fxC.height = window.innerHeight;
 }
 window.onresize = resize; resize();
 
-function log(t) {
-  const d = document.createElement('div');
-  d.textContent = `[${Math.random().toString(16).slice(2,8)}] ${t}`;
-  term.prepend(d); if(term.children.length > 15) term.lastChild.remove();
-}
-
+/** ◈ VOICE & HUD ◈ **/
 function speak(t) {
   const m = new SpeechSynthesisUtterance(t);
   const v = window.speechSynthesis.getVoices();
   m.voice = v.find(x => x.name.includes('Google UK English Male')) || v[0];
-  m.rate = 1.1; window.speechSynthesis.speak(m);
+  m.rate = 1.05; window.speechSynthesis.speak(m);
 }
 
-/** ◈ NEBULA PARTICLE ENGINE ◈ **/
-class Particle {
-  constructor(x,y) {
-    this.x = x; this.y = y;
-    this.vx = (Math.random()-0.5) * 25;
-    this.vy = (Math.random()-0.5) * 25;
-    this.life = 1.0;
-    this.c = Math.random() > 0.5 ? '#00f0ff' : '#fff';
-  }
-  update() { this.x += this.vx; this.y += this.vy; this.life -= 0.02; }
-  draw() {
-    fxCtx.globalAlpha = this.life;
-    fxCtx.fillStyle = this.c;
-    fxCtx.beginPath(); fxCtx.arc(this.x, this.y, 3 * this.life, 0, Math.PI*2); fxCtx.fill();
-  }
+function notify(msg, jLine) {
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.style.opacity = 1;
+  setTimeout(() => t.style.opacity = 0, 2500);
+  if (jLine) speak(jLine);
 }
 
-function triggerNebula(x,y) {
-  speak("Energy surge detected. Nebula protocol active.");
-  log("CRITICAL_COLLISION_DETECTION");
-  for(let i=0; i<80; i++) s.particles.push(new Particle(x,y));
+/** ◈ CLAP BLAST & ENERGY ◈ **/
+function triggerBlast(x,y) {
+  const b = document.createElement('div');
+  b.className = 'blast';
+  b.style.left = (x - 100) + 'px'; b.style.top = (y - 100) + 'px';
+  b.style.width = b.style.height = '200px';
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 600);
+  notify("ENERGY DISCHARGE", "Destabilizing regional star grid, sir.");
 }
 
-/** ◈ ULTRON ENERGY FLOW ◈ **/
-function drawBridge(p1, p2) {
-  const d = Math.hypot(p2.x-p1.x, p2.y-p1.y);
+function drawEnergy(p1, p2) {
+  const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
   
-  // Clap logic
-  if(d < 70 && s.lastDist > 120) triggerNebula((p1.x+p2.x)/2, (p1.y+p2.y)/2);
-  s.lastDist = d;
+  // Clap Detection
+  if (d < 60 && S.lastDist > 120 && !S.isClapping) {
+    triggerBlast((p1.x+p2.x)/2, (p1.y+p2.y)/2);
+    S.isClapping = true;
+    setTimeout(() => S.isClapping = false, 1000);
+  }
+  S.lastDist = d;
 
   fxCtx.save();
-  fxCtx.strokeStyle = d < 150 ? '#f25' : '#00f0ff';
-  fxCtx.lineWidth = 2;
-  fxCtx.shadowBlur = 15; fxCtx.shadowColor = fxCtx.strokeStyle;
-  
+  fxCtx.shadowBlur = 15; fxCtx.shadowColor = S.color;
+  fxCtx.strokeStyle = S.color; fxCtx.lineWidth = 2;
   fxCtx.beginPath();
   fxCtx.moveTo(p1.x, p1.y);
-  // Jagged arc
-  for(let i=0; i<10; i++) {
+  // Jagged Ultron jitter
+  for(let i=1; i<10; i++){
     const t = i/10;
-    const x = p1.x + (p2.x-p1.x)*t + (Math.random()-0.5)*30;
-    const y = p1.y + (p2.y-p1.y)*t + (Math.random()-0.5)*30;
-    fxCtx.lineTo(x,y);
+    fxCtx.lineTo(p1.x+(p2.x-p1.x)*t + (Math.random()-0.5)*25, p1.y+(p2.y-p1.y)*t + (Math.random()-0.5)*25);
   }
   fxCtx.lineTo(p2.x, p2.y);
   fxCtx.stroke();
   fxCtx.restore();
 }
 
-/** ◈ HAND TRACKING ◈ **/
-function onResults(res) {
-  fxCtx.clearRect(0,0,fxCvs.width,fxCvs.height);
-  
-  // Update particles
-  s.particles.forEach((p,i) => { p.update(); p.draw(); if(p.life<=0) s.particles.splice(i,1); });
-
-  if(!res.multiHandLandmarks?.length) return;
-  document.getElementById('lStatus').textContent = "ACTIVE";
-  document.getElementById('lStatus').style.color = "var(--g)";
-
-  if(res.multiHandLandmarks.length >= 2) {
-    drawBridge(gp(res.multiHandLandmarks[0][9]), gp(res.multiHandLandmarks[1][9]));
-  }
-
-  const h = res.multiHandLandmarks[0];
-  const p = gp(h[8]);
-  // Smoothing
-  s.h.x = s.h.x*0.7 + p.x*0.3; s.h.y = s.h.y*0.7 + p.y*0.3;
-
-  const gest = (h[8].y < h[6].y && h[12].y > h[10].y) ? 'draw' : 'hover';
-
-  if(gest === 'draw' && s.tool === 'draw') {
-    if(s.lp) {
-      bgCtx.strokeStyle = s.color; bgCtx.lineWidth = 6; bgCtx.lineCap = 'round';
-      bgCtx.beginPath(); bgCtx.moveTo(s.lp.x, s.lp.y); bgCtx.lineTo(s.h.x, s.h.y); bgCtx.stroke();
-    }
-    s.lp = {...s.h};
-  } else { s.lp = null; }
-
-  // Draw HUD Crosshair
-  fxCtx.strokeStyle = s.color;
-  fxCtx.strokeRect(s.h.x-20, s.h.y-20, 40, 40);
-  fxCtx.beginPath(); fxCtx.moveTo(s.h.x-30, s.h.y); fxCtx.lineTo(s.h.x+30, s.h.y);
-  fxCtx.moveTo(s.h.x, s.h.y-30); fxCtx.lineTo(s.h.x, s.h.y+30); fxCtx.stroke();
-}
-
-function gp(lm) { return { x: (1-lm.x)*fxCvs.width, y: lm.y*fxCvs.height }; }
-
-/** ◈ OBJECT LOGIC ◈ **/
+/** ◈ OBJECT LOGIC (CLAUDE'S ROBUST VERSION) ◈ **/
 function makeObj(type, content) {
   const el = document.createElement('div');
   el.className = 'fo'; el.style.left = '20%'; el.style.top = '20%';
-  el.innerHTML = `<div class="fbar">NEXUS_STREAM_${type.toUpperCase()}</div>
-    <div class="fbody">${type==='text'?`<div class="ft" contenteditable="true">${content}</div>`:`<img src="${content}">`}</div>`;
-  document.getElementById('objects-root').appendChild(el);
+  el.innerHTML = `
+    <div class="fbar"><div class="ftl">${type.toUpperCase()}</div><button class="fb cl">✕</button></div>
+    <div class="fbody">${type==='text'?`<div class="ft" contenteditable="true">${content}</div>`:`<img src="${content}">`}</div>
+    <div class="rh"></div>
+  `;
+  objRoot.appendChild(el);
   
-  let d = false, sx, sy, sl, st;
-  el.onpointerdown = e => { if(e.target.className==='fbar'){d=true; sx=e.clientX; sy=e.clientY; sl=el.offsetLeft; st=el.offsetTop; el.setPointerCapture(e.pointerId);}};
-  window.addEventListener('pointermove', e => { if(d){ el.style.left=(sl+e.clientX-sx)+'px'; el.style.top=(st+e.clientY-sy)+'px'; }});
-  window.addEventListener('pointerup', () => d=false);
-  log(`LOADED_${type.toUpperCase()}`);
+  let d = false, r = false, sx, sy, sw, sl, st;
+  const bar = el.querySelector('.fbar'), res = el.querySelector('.rh');
+
+  bar.onpointerdown = e => { d = true; sx=e.clientX; sy=e.clientY; sl=el.offsetLeft; st=el.offsetTop; el.setPointerCapture(e.pointerId); };
+  res.onpointerdown = e => { r = true; sx=e.clientX; sw=el.offsetWidth; el.setPointerCapture(e.pointerId); e.stopPropagation(); };
+  
+  window.addEventListener('pointermove', e => {
+    if (d) { el.style.left = (sl + e.clientX - sx) + 'px'; el.style.top = (st + e.clientY - sy) + 'px'; }
+    if (r) { el.style.width = (sw + e.clientX - sx) + 'px'; }
+  });
+  window.addEventListener('pointerup', () => d = r = false);
+  el.querySelector('.cl').onclick = () => el.remove();
 }
 
-function bootSystem() {
-  document.getElementById('intro').style.display = 'none';
+/** ◈ HAND TRACKING ◈ **/
+function onResults(res) {
+  fxCtx.clearRect(0,0,fxC.width,fxC.height);
+  if (!res.multiHandLandmarks?.length) { S.lp = null; return; }
+
+  if (res.multiHandLandmarks.length >= 2) {
+    drawEnergy(gp(res.multiHandLandmarks[0][9]), gp(res.multiHandLandmarks[1][9]));
+  }
+
+  const h = res.multiHandLandmarks[0];
+  const raw = gp(h[8]);
+  S.hPos.x = S.hPos.x * 0.7 + raw.x * 0.3; S.hPos.y = S.hPos.y * 0.7 + raw.y * 0.3;
+  
+  const gest = (h[8].y < h[6].y && h[12].y > h[10].y) ? 'draw' : 'hover';
+
+  if (gest === 'draw' && S.tool === 'draw') {
+    if (S.lp) {
+      bgCtx.strokeStyle = S.color; bgCtx.lineWidth = S.bSize; bgCtx.lineCap = 'round';
+      bgCtx.beginPath(); bgCtx.moveTo(S.lp.x, S.lp.y); bgCtx.lineTo(S.hPos.x, S.hPos.y); bgCtx.stroke();
+    }
+    S.lp = {...S.hPos};
+  } else { S.lp = null; }
+
+  // Cursor
+  fxCtx.strokeStyle = S.color; fxCtx.strokeRect(S.hPos.x-15, S.hPos.y-15, 30, 30);
+}
+
+function gp(lm) { return { x: (1-lm.x)*fxC.width, y: lm.y*fxC.height }; }
+
+function boot() {
+  document.getElementById('intro').style.opacity = 0;
+  setTimeout(() => {
+    document.getElementById('intro').remove();
+    document.getElementById('app').style.display = 'block';
+  }, 1000);
+  
   const hands = new Hands({locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
-  hands.setOptions({maxNumHands:2, modelComplexity:1, minDetectionConfidence:0.6});
+  hands.setOptions({maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6});
   hands.onResults(onResults);
-  const cam = new Camera(document.getElementById('video'), { onFrame: async() => await hands.send({image:document.getElementById('video')}), width:1280, height:720 });
+  
+  const cam = new Camera(document.getElementById('vid'), {
+    onFrame: async () => await hands.send({image: document.getElementById('vid')}),
+    width: 1280, height: 720
+  });
   cam.start();
-  speak("Omni-Recon initialized. Workspace is ready for deployment.");
+  notify("ONLINE", "Nexus protocol initialized. Welcome back, sir.");
 }
 
-/** ◈ TOOL WIRING ◈ **/
-document.getElementById('btnText').onclick = () => makeObj('text', 'STARK_DATA_BLOCK');
-document.getElementById('btnImg').onclick = () => document.getElementById('fileIn').click();
-document.getElementById('fileIn').onchange = e => { const r = new FileReader(); r.onload=v=>makeObj('image', v.target.result); r.readAsDataURL(e.target.files[0]); };
-document.getElementById('btnClear').onclick = () => { bgCtx.clearRect(0,0,bgCvs.width,bgCvs.height); document.getElementById('objects-root').innerHTML=''; speak("System purged."); };
-document.querySelectorAll('.tool-btn[data-t]').forEach(b => b.onclick = () => { s.tool=b.dataset.t; document.querySelectorAll('.tool-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); });
-
+/** ◈ UI WIRING ◈ **/
+document.getElementById('tTx').onclick = () => makeObj('text', 'STARK_DATA_BLOCK');
+document.getElementById('fInBtn').onclick = () => document.getElementById('fIn').click();
+document.getElementById('fIn').onchange = e => {
+  const r = new FileReader(); r.onload = v => makeObj('image', v.target.result);
+  r.readAsDataURL(e.target.files[0]);
+};
+document.getElementById('tClr').onclick = () => { bgCtx.clearRect(0,0,bgC.width,bgC.height); objRoot.innerHTML=''; speak("Purging workspace."); };
+document.querySelectorAll('.t-btn').forEach(b => b.onclick = () => {
+  if (b.id === 'tDr' || b.id === 'tEr') {
+    S.tool = b.id === 'tDr' ? 'draw' : 'erase';
+    document.querySelectorAll('.t-btn').forEach(x => x.classList.remove('act'));
+    b.classList.add('act');
+  }
+});
 </script>
 </body>
 </html>
